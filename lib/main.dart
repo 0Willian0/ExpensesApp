@@ -1,7 +1,9 @@
 
 import 'dart:ffi';
 
-import 'package:expenses_app/transaction.dart';
+import 'package:expenses_app/components/chart.dart';
+
+import '../models/transaction.dart';
 import 'dart:math';
 import './components/transaction_form.dart';
 import './components/transaction_list.dart';
@@ -16,8 +18,30 @@ class ExpensesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = ThemeData();
     return MaterialApp(
-        home: MyHomePage()
+        home: MyHomePage(),
+        theme: theme.copyWith(
+        colorScheme: theme.colorScheme.copyWith(
+        primary: Colors.purple,
+        secondary: Colors.amber,
+        ),
+          textTheme: theme.textTheme.copyWith(
+            titleLarge: TextStyle(
+              fontFamily: 'OpenSans',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          appBarTheme: AppBarTheme(
+            titleTextStyle: TextStyle(
+              fontFamily: 'OpenSans',
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+     )
     );
   }
 }
@@ -29,8 +53,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _transaction = [Transaction(id: 't1', title: 'Novo Tenis', value: 310.76, date: DateTime.now()),
-    Transaction(id: 't2', title: 'Conta de Luz', value: 210.36, date: DateTime.now())];
+  final List <Transaction> _transaction = [
+    Transaction(id: 't0', title: 'Conta Antiga', value: 310.76, date: DateTime.now().subtract(Duration(days: 33))),
+    Transaction(id: 't1', title: 'Novo Tenis', value: 310.76, date: DateTime.now().subtract(Duration(days: 4))),
+    Transaction(id: 't2', title: 'Conta de Luz', value: 210.36, date: DateTime.now().subtract(Duration(days: 3)))];
+
+  List<Transaction> get _recentTransactions{
+    return _transaction.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
+    }).toList();
+  }
+
+
   _addTransaction(String title, double value)
   {
     final newTransaction = Transaction(
@@ -71,14 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              child: Card(
-                color: Colors.blue,
-                child: Text('Grafico'),
-                elevation: 5
-              ),
-            ),
+            Chart(_recentTransactions),
             TransactionList(_transaction)
           ],
     ),

@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import '../transaction.dart';
+import '../models/transaction.dart';
 import 'package:intl/intl.dart';
 
 class TransactionList extends StatelessWidget {
@@ -13,7 +13,23 @@ class TransactionList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 300,
-      child: ListView.builder(
+      child: transactions.isEmpty ? Column(
+        children: <Widget>[
+          SizedBox(height: 20,),
+          Text(
+            'Nenhuma Transacao Cadastrada!',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          SizedBox(height: 20,),
+          Container(
+            height: 200,
+            child: Image.asset(
+                'assets/images/waiting.png',
+                fit: BoxFit.cover,
+            ),
+          )
+        ],
+      ) : ListView.builder(
         itemCount: transactions.length,
         itemBuilder: (ctx, index){
           final tr = transactions[index];
@@ -27,7 +43,7 @@ class TransactionList extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                       border: Border.all(
-                          color: Colors.purple,
+                          color: Theme.of(context).colorScheme.primary,
                           width: 2
                       )
                   ),
@@ -37,7 +53,7 @@ class TransactionList extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
-                        color: Colors.purple
+                        color: Theme.of(context).colorScheme.primary
                     ),
                   ),
 
@@ -46,11 +62,8 @@ class TransactionList extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(tr.title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                      style: Theme.of(context).textTheme.titleLarge,
                       ),
-                    ),
                     Text(DateFormat('d MMM y').format(tr.date),
                       style: TextStyle(
                           color: Colors.grey
