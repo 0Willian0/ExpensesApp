@@ -1,6 +1,4 @@
 
-import 'dart:ffi';
-
 import 'package:expenses_app/components/chart.dart';
 
 import '../models/transaction.dart';
@@ -33,6 +31,8 @@ class ExpensesApp extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
+            labelLarge: TextStyle(color: Colors.white,
+            fontWeight: FontWeight.bold)
           ),
           appBarTheme: AppBarTheme(
             titleTextStyle: TextStyle(
@@ -53,10 +53,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List <Transaction> _transaction = [
-    Transaction(id: 't0', title: 'Conta Antiga', value: 310.76, date: DateTime.now().subtract(Duration(days: 33))),
-    Transaction(id: 't1', title: 'Novo Tenis', value: 310.76, date: DateTime.now().subtract(Duration(days: 4))),
-    Transaction(id: 't2', title: 'Conta de Luz', value: 210.36, date: DateTime.now().subtract(Duration(days: 3)))];
+  final List <Transaction> _transaction = [];
 
   List<Transaction> get _recentTransactions{
     return _transaction.where((tr) {
@@ -65,13 +62,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-  _addTransaction(String title, double value)
+  _addTransaction(String title, double value, DateTime date)
   {
     final newTransaction = Transaction(
         id: Random().nextDouble().toString(),
         title: title,
         value: value,
-        date: DateTime.now()
+        date: date
     );
     setState(() {
       _transaction.add(newTransaction);
@@ -79,7 +76,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Navigator.of(context).pop();
   }
+  _removeTransaction(String id)
+  {
+    setState(() {
+      _transaction.removeWhere((tr){
+        return tr.id == id;
+      });
+    });
 
+  }
   _openTransactionFormModal(BuildContext context)
   {
     showModalBottomSheet(
@@ -106,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Chart(_recentTransactions),
-            TransactionList(_transaction)
+            TransactionList(_transaction, _removeTransaction)
           ],
     ),
       ),
